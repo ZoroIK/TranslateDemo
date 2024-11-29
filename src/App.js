@@ -1,9 +1,9 @@
 // Import dependencies
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useEffect, useCallback } from "react";
 import * as tf from "@tensorflow/tfjs";
 import Webcam from "react-webcam";
 import "./App.css";
-import { nextFrame } from "@tensorflow/tfjs";
+//import { nextFrame } from "@tensorflow/tfjs";
 
 import {drawRect} from "./utilities"; 
 
@@ -12,7 +12,7 @@ function App() {
   const canvasRef = useRef(null);
 
   // Main function
-  const runCoco = async () => {
+  const runCoco = useCallback (async () => {
     
     //https://tesnsorflowjsrealtimemodel.s3.us-east.cloud-object-storage.appdomain.cloud/model.json
     const net = await tf.loadGraphModel('https://tesnsorflowjsrealtimemodel.s3.us-east.cloud-object-storage.appdomain.cloud/model.json')
@@ -21,7 +21,11 @@ function App() {
     setInterval(() => {
       detect(net);
     }, 16.7);
-  };
+
+    
+  },[]);
+
+  
 
   const detect = async (net) => {
     // Check data is available
@@ -71,7 +75,10 @@ function App() {
     }
   };
 
-  useEffect(()=>{runCoco()},[]);
+  //useEffect(()=>{runCoco()},[]);
+  useEffect(() => {
+    runCoco();
+  }, [runCoco]);
 
   return (
     <div className="App">
