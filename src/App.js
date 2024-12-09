@@ -2,43 +2,23 @@ import React, { useRef, useState, useEffect, useCallback } from "react";
 import * as tf from "@tensorflow/tfjs";
 import Webcam from "react-webcam";
 import "./App.css";
-//import { nextFrame } from "@tensorflow/tfjs";
-
 import { drawRect } from "./utilities";
 
 function App() {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
-  const [devices, setDevices] = useState([]);
-  const [selectedDeviceId, setSelectedDeviceId] = useState("");
-
-  // Get the list of video input devices
-  useEffect(() => {
-    const getDevices = async () => {
-      const deviceList = await navigator.mediaDevices.enumerateDevices();
-      const videoDevices = deviceList.filter((device) => device.kind === "videoinput");
-      setDevices(videoDevices);
-      if (videoDevices.length > 0) {
-        setSelectedDeviceId(videoDevices[0].deviceId);
-      }
-    };
-
-    getDevices();
-  }, []);
+  const [facingMode, setFacingMode] = useState("user"); // Front-facing by default
 
   // Main function
-  const runCoco = useCallback (async () => {
-    
-    //https://tesnsorflowjsrealtimemodel.s3.us-east.cloud-object-storage.appdomain.cloud/model.json
-    const net = await tf.loadGraphModel('https://tesnsorflowjsrealtimemodel.s3.us-east.cloud-object-storage.appdomain.cloud/model.json')
-    
-    //  Loop and detect hands
+  const runCoco = useCallback(async () => {
+    const net = await tf.loadGraphModel(
+      "https://tesnsorflowjsrealtimemodel.s3.us-east.cloud-object-storage.appdomain.cloud/model.json"
+    );
+
     setInterval(() => {
       detect(net);
     }, 16.7);
-
-    
-  },[]);
+  }, []);
 
   const detect = async (net) => {
     if (
@@ -87,22 +67,26 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <select
-          onChange={(e) => setSelectedDeviceId(e.target.value)}
-          value={selectedDeviceId}
-          style={{ position: "absolute", top: 10, zIndex: 10 }}
+        {/* Toggle Front/Back Camera */}
+        <button
+          onClick={() =>
+            setFacingMode((prevMode) => (prevMode === "user" ? "environment" : "user"))
+          }
+          style={{
+            position: "absolute",
+            top: 10,
+            zIndex: 10,
+            padding: "10px 20px",
+            fontSize: "16px",
+          }}
         >
-          {devices.map((device) => (
-            <option key={device.deviceId} value={device.deviceId}>
-              {device.label || `Camera ${device.deviceId}`}
-            </option>
-          ))}
-        </select>
+          Switch Camera
+        </button>
 
         <Webcam
           ref={webcamRef}
           muted={true}
-          videoConstraints={{ deviceId: selectedDeviceId }}
+          videoConstraints={{ facingMode }}
           style={{
             position: "absolute",
             marginLeft: "auto",
@@ -110,7 +94,7 @@ function App() {
             left: 0,
             right: 0,
             textAlign: "center",
-            zindex: 9,
+            zIndex: 9,
             width: 640,
             height: 480,
           }}
@@ -125,7 +109,7 @@ function App() {
             left: 0,
             right: 0,
             textAlign: "center",
-            zindex: 8,
+            zIndex: 8,
             width: 640,
             height: 480,
           }}
