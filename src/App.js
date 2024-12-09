@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import * as tf from "@tensorflow/tfjs";
 import Webcam from "react-webcam";
 import "./App.css";
-import { nextFrame } from "@tensorflow/tfjs";
+
 
 import { drawRect } from "./utilities";
 
