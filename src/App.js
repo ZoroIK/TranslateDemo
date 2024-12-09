@@ -27,15 +27,18 @@ function App() {
   }, []);
 
   // Main function
-  const runCoco = async () => {
-    const net = await tf.loadGraphModel(
-      "https://tesnsorflowjsrealtimemodel.s3.us-east.cloud-object-storage.appdomain.cloud/model.json"
-    );
-
+  const runCoco = useCallback (async () => {
+    
+    //https://tesnsorflowjsrealtimemodel.s3.us-east.cloud-object-storage.appdomain.cloud/model.json
+    const net = await tf.loadGraphModel('https://tesnsorflowjsrealtimemodel.s3.us-east.cloud-object-storage.appdomain.cloud/model.json')
+    
+    //  Loop and detect hands
     setInterval(() => {
       detect(net);
     }, 16.7);
-  };
+
+    
+  },[]);
 
   const detect = async (net) => {
     if (
